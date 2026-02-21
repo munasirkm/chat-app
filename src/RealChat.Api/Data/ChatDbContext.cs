@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RealChat.Api.Models;
+using RealChat.Api.Services;
 
 namespace RealChat.Api.Data;
 

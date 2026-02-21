@@ -1,10 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using RealChat.Api.Data;
+using RealChat.Api.Hubs;
+using RealChat.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ChatDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=realchat.db"));
+
+builder.Services.AddSingleton<IConnectionTracker, ConnectionTracker>();
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
@@ -29,5 +34,6 @@ app.UseCors();
 app.UseHttpsRedirection();
 
 app.MapGet("/", () => Results.Ok(new { name = "RealChat API", status = "running" }));
+app.MapHub<ChatHub>("/hubs/chat");
 
 app.Run();
