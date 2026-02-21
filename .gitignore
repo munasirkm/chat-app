@@ -1,0 +1,25 @@
+# Build / IDE
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.db
+*.db-shm
+*.db-wal
+
+# Node
+node_modules/
+client/dist/
+npm-debug.log*
+
+# Env
+.env
+.env.local
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+docs/

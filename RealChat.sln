@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DE08D3EB-7A1F-4C6C-9F1B-F0290754C516}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealChat.Api", "src\RealChat.Api\RealChat.Api.csproj", "{DEAA064A-6E86-4D4D-BFEA-221CC1D55F20}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RealChat.Tests", "src\RealChat.Tests\RealChat.Tests.csproj", "{B98196CF-7B16-4FD6-8F5E-E6ED8E290A2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEAA064A-6E86-4D4D-BFEA-221CC1D55F20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEAA064A-6E86-4D4D-BFEA-221CC1D55F20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEAA064A-6E86-4D4D-BFEA-221CC1D55F20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEAA064A-6E86-4D4D-BFEA-221CC1D55F20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B98196CF-7B16-4FD6-8F5E-E6ED8E290A2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B98196CF-7B16-4FD6-8F5E-E6ED8E290A2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B98196CF-7B16-4FD6-8F5E-E6ED8E290A2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B98196CF-7B16-4FD6-8F5E-E6ED8E290A2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DEAA064A-6E86-4D4D-BFEA-221CC1D55F20} = {DE08D3EB-7A1F-4C6C-9F1B-F0290754C516}
+		{B98196CF-7B16-4FD6-8F5E-E6ED8E290A2C} = {DE08D3EB-7A1F-4C6C-9F1B-F0290754C516}
+	EndGlobalSection
+EndGlobal
