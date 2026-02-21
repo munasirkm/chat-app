@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RealChat.Api.Api;
 using RealChat.Api.Data;
 using RealChat.Api.Hubs;
 using RealChat.Api.Services;
@@ -35,5 +36,6 @@ app.UseHttpsRedirection();
 
 app.MapGet("/", () => Results.Ok(new { name = "RealChat API", status = "running" }));
 app.MapHub<ChatHub>("/hubs/chat");
+app.MapChatApi();
 
 app.Run();
