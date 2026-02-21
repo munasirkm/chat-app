@@ -22,6 +22,18 @@ export function createChatConnection() {
       return connection.invoke('Join', userName)
     },
 
+    async getOnlineUserIds() {
+      return connection.invoke('GetOnlineUserIds')
+    },
+
+    onUserOnline(handler) {
+      connection.on('UserOnline', handler)
+    },
+
+    onUserOffline(handler) {
+      connection.on('UserOffline', handler)
+    },
+
     async sendMessage(receiverId, data) {
       await connection.invoke('SendMessage', {
         type: 'chat',

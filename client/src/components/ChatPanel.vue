@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { fetchMessageHistory } from '../api/chatApi.js'
 
 const props = defineProps({
@@ -9,11 +9,17 @@ const props = defineProps({
   messages: { type: Array, default: () => [] },
   setConversationHistory: { type: Function, required: true },
   conversationKey: { type: String, default: '' },
-  onSentMessage: { type: Function, default: null }
+  onSentMessage: { type: Function, default: null },
+  typingFromUserId: { type: Number, default: null }
 })
 
 const inputText = ref('')
 const loading = ref(false)
+let typingDebounceTimer = null
+
+const showTypingIndicator = computed(() =>
+  props.typingFromUserId === props.otherUser?.id
+)
 
 async function loadHistory() {
   if (!props.conversationKey) return
@@ -26,9 +32,25 @@ async function loadHistory() {
   }
 }
 
+function sendTyping(isTyping) {
+  if (!props.connection?.connection) return
+  props.connection.setTyping(props.otherUser.id, isTyping)
+}
+
+function onInput() {
+  sendTyping(true)
+  if (typingDebounceTimer) clearTimeout(typingDebounceTimer)
+  typingDebounceTimer = setTimeout(() => sendTyping(false), 800)
+}
+
 function send() {
   const text = inputText.value?.trim()
   if (!text || !props.connection?.connection) return
+  sendTyping(false)
+  if (typingDebounceTimer) {
+    clearTimeout(typingDebounceTimer)
+    typingDebounceTimer = null
+  }
   props.connection.sendMessage(props.otherUser.id, text)
   if (props.onSentMessage) {
     props.onSentMessage({
@@ -43,6 +65,11 @@ function send() {
 
 onMounted(() => {
   loadHistory()
+})
+
+onUnmounted(() => {
+  if (typingDebounceTimer) clearTimeout(typingDebounceTimer)
+  sendTyping(false)
 })
 
 watch(
@@ -67,6 +94,9 @@ watch(
         <div class="bubble">{{ m.data }}</div>
         <div class="meta muted">{{ m.sentAt ? new Date(m.sentAt).toLocaleTimeString() : '' }}</div>
       </div>
+      <div v-if="showTypingIndicator" class="typing-indicator muted">
+        {{ otherUser.name }} is typing...
+      </div>
     </div>
     <div v-else class="muted">Loading…</div>
 
@@ -76,6 +106,7 @@ watch(
         type="text"
         placeholder="Type a message..."
         maxlength="4096"
+        @input="onInput"
       />
       <button type="submit" :disabled="!inputText?.trim()">Send</button>
     </form>
@@ -140,6 +171,12 @@ watch(
 .meta {
   font-size: 0.75rem;
   margin-top: 0.25rem;
+}
+
+.typing-indicator {
+  font-size: 0.85rem;
+  font-style: italic;
+  padding: 0.25rem 0;
 }
 
 .input-row {

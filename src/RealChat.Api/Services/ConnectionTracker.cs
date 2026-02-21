@@ -18,4 +18,7 @@ public sealed class ConnectionTracker : IConnectionTracker
 
     public IReadOnlyList<string> GetConnectionIdsForUser(int userId) =>
         _connectionToUser.Where(kv => kv.Value == userId).Select(kv => kv.Key).ToList();
+
+    public IReadOnlyList<int> GetAllOnlineUserIds() =>
+        _connectionToUser.Values.Distinct().ToList();
 }

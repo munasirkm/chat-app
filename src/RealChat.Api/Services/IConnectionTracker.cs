@@ -9,4 +9,5 @@ public interface IConnectionTracker
     void Remove(string connectionId);
     int? GetUserId(string connectionId);
     IReadOnlyList<string> GetConnectionIdsForUser(int userId);
+    IReadOnlyList<int> GetAllOnlineUserIds();
 }

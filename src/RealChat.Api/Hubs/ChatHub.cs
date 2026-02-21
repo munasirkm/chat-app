@@ -36,9 +36,16 @@ public class ChatHub : Hub
 
         _tracker.Add(connectionId, user.Id);
         await Groups.AddToGroupAsync(connectionId, GroupName(user.Id));
+        await Groups.AddToGroupAsync(connectionId, "all");
+        await Clients.Group("all").SendAsync("UserOnline", user.Id);
 
         return new JoinResult { Success = true, UserId = user.Id };
     }
+
+    /// <summary>
+    /// Returns the list of user ids currently connected (for presence).
+    /// </summary>
+    public IReadOnlyList<int> GetOnlineUserIds() => _tracker.GetAllOnlineUserIds();
 
     /// <summary>
     /// Receives a chat message: validates, persists, forwards to receiver. Invalid messages get an error response only.
@@ -120,7 +127,11 @@ public class ChatHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _tracker.Remove(Context.ConnectionId!);
+        var connectionId = Context.ConnectionId!;
+        var userId = _tracker.GetUserId(connectionId);
+        _tracker.Remove(connectionId);
+        if (userId != null)
+            await Clients.Group("all").SendAsync("UserOffline", userId.Value);
         await base.OnDisconnectedAsync(exception);
     }
 
