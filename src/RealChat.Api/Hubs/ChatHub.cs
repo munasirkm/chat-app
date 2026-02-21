@@ -45,19 +45,20 @@ public class ChatHub : Hub
     /// </summary>
     public async Task SendMessage(ChatMessageDto dto)
     {
-        dto.Type = MessageType.Chat;
-        var error = MessageValidator.Validate(dto);
-        if (error != null)
-        {
-            await SendErrorToCaller(error);
-            return;
-        }
-
         var connectionId = Context.ConnectionId!;
         var senderId = _tracker.GetUserId(connectionId);
         if (senderId == null)
         {
             await SendErrorToCaller("Not registered. Call Join first.");
+            return;
+        }
+
+        dto.Type = MessageType.Chat;
+        dto.SenderId = senderId.Value.ToString(); // Server sets sender from connection; client is not trusted
+        var error = MessageValidator.Validate(dto);
+        if (error != null)
+        {
+            await SendErrorToCaller(error);
             return;
         }
 
@@ -90,19 +91,20 @@ public class ChatHub : Hub
     /// </summary>
     public async Task SetTyping(ChatMessageDto dto)
     {
-        dto.Type = MessageType.Typing;
-        var error = MessageValidator.Validate(dto);
-        if (error != null)
-        {
-            await SendErrorToCaller(error);
-            return;
-        }
-
         var connectionId = Context.ConnectionId!;
         var senderId = _tracker.GetUserId(connectionId);
         if (senderId == null)
         {
             await SendErrorToCaller("Not registered. Call Join first.");
+            return;
+        }
+
+        dto.Type = MessageType.Typing;
+        dto.SenderId = senderId.Value.ToString();
+        var error = MessageValidator.Validate(dto);
+        if (error != null)
+        {
+            await SendErrorToCaller(error);
             return;
         }
 
