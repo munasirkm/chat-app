@@ -31,7 +31,6 @@ function submit() {
         Join
       </button>
     </form>
-    <p class="muted">Make sure the backend is running on port 5086 (or update Vite proxy).</p>
   </div>
 </template>
 
