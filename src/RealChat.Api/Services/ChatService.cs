@@ -16,6 +16,29 @@ public class ChatService : IChatService
         _db = db;
     }
 
+    public async Task<User> GetOrCreateUserAsync(string name, CancellationToken ct = default)
+    {
+        var existing = await _db.Users.FirstOrDefaultAsync(u => u.Name == name, ct);
+        if (existing != null) return existing;
+        var newUser = new User { Name = name };
+        _db.Users.Add(newUser);
+        await _db.SaveChangesAsync(ct);
+        return newUser;
+    }
+
+    public async Task SaveMessageAsync(int senderId, int receiverId, string data, CancellationToken ct = default)
+    {
+        var message = new Message
+        {
+            SenderId = senderId,
+            ReceiverId = receiverId,
+            Data = data,
+            SentAt = DateTime.UtcNow
+        };
+        _db.Messages.Add(message);
+        await _db.SaveChangesAsync(ct);
+    }
+
     public async Task<IReadOnlyList<UserDto>> GetUsersAsync(CancellationToken ct = default)
     {
         return await _db.Users

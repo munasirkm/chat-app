@@ -1,20 +1,22 @@
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using RealChat.Api.Data;
 using RealChat.Api.Models;
 using RealChat.Api.Services;
 
 namespace RealChat.Api.Hubs;
 
+/// <summary>
+/// SignalR hub: orchestrates connection tracking, validation, service calls, and broadcasting.
+/// No direct data access; delegates persistence to IChatService.
+/// </summary>
 public class ChatHub : Hub
 {
     private readonly IConnectionTracker _tracker;
-    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IChatService _chatService;
 
-    public ChatHub(IConnectionTracker tracker, IServiceScopeFactory scopeFactory)
+    public ChatHub(IConnectionTracker tracker, IChatService chatService)
     {
         _tracker = tracker;
-        _scopeFactory = scopeFactory;
+        _chatService = chatService;
     }
 
     /// <summary>
@@ -28,16 +30,13 @@ public class ChatHub : Hub
             return new JoinResult { Success = false, UserId = 0 };
         }
 
-        using var scope = _scopeFactory.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
-
-        var user = await GetOrCreateUserAsync(db, userName.Trim());
+        var user = await _chatService.GetOrCreateUserAsync(userName.Trim());
         var connectionId = Context.ConnectionId!;
 
         _tracker.Add(connectionId, user.Id);
-        await Groups.AddToGroupAsync(connectionId, GroupName(user.Id));
-        await Groups.AddToGroupAsync(connectionId, "all");
-        await Clients.Group("all").SendAsync("UserOnline", user.Id);
+        await Groups.AddToGroupAsync(connectionId, HubGroups.User(user.Id));
+        await Groups.AddToGroupAsync(connectionId, HubGroups.All);
+        await Clients.Group(HubGroups.All).SendAsync("UserOnline", user.Id);
 
         return new JoinResult { Success = true, UserId = user.Id };
     }
@@ -48,49 +47,24 @@ public class ChatHub : Hub
     public IReadOnlyList<int> GetOnlineUserIds() => _tracker.GetAllOnlineUserIds();
 
     /// <summary>
-    /// Receives a chat message: validates, persists, forwards to receiver. Invalid messages get an error response only.
+    /// Receives a chat message: validates, persists via service, forwards to receiver.
     /// </summary>
     public async Task SendMessage(ChatMessageDto dto)
     {
-        var connectionId = Context.ConnectionId!;
-        var senderId = _tracker.GetUserId(connectionId);
-        if (senderId == null)
-        {
-            await SendErrorToCaller("Not registered. Call Join first.");
-            return;
-        }
+        var (senderId, error) = ResolveAndValidateSender();
+        if (error != null) { await SendErrorToCaller(error); return; }
 
         dto.Type = MessageType.Chat;
-        dto.SenderId = senderId.Value.ToString(); // Server sets sender from connection; client is not trusted
-        var error = MessageValidator.Validate(dto);
-        if (error != null)
-        {
-            await SendErrorToCaller(error);
-            return;
-        }
+        dto.SenderId = senderId!.Value.ToString();
+        var validationError = MessageValidator.Validate(dto);
+        if (validationError != null) { await SendErrorToCaller(validationError); return; }
 
         if (!int.TryParse(dto.ReceiverId, out var receiverId))
-        {
-            await SendErrorToCaller("Invalid receiverId.");
-            return;
-        }
+        { await SendErrorToCaller("Invalid receiverId."); return; }
 
-        using (var scope = _scopeFactory.CreateScope())
-        {
-            var db = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
-            var message = new Message
-            {
-                SenderId = senderId.Value,
-                ReceiverId = receiverId,
-                Data = dto.Data ?? string.Empty,
-                SentAt = DateTime.UtcNow
-            };
-            db.Messages.Add(message);
-            await db.SaveChangesAsync();
-        }
+        await _chatService.SaveMessageAsync(senderId.Value, receiverId, dto.Data ?? string.Empty);
 
-        dto.SenderId = senderId.Value.ToString();
-        await Clients.Group(GroupName(receiverId)).SendAsync("ReceiveMessage", dto);
+        await Clients.Group(HubGroups.User(receiverId)).SendAsync("ReceiveMessage", dto);
     }
 
     /// <summary>
@@ -98,31 +72,18 @@ public class ChatHub : Hub
     /// </summary>
     public async Task SetTyping(ChatMessageDto dto)
     {
-        var connectionId = Context.ConnectionId!;
-        var senderId = _tracker.GetUserId(connectionId);
-        if (senderId == null)
-        {
-            await SendErrorToCaller("Not registered. Call Join first.");
-            return;
-        }
+        var (senderId, error) = ResolveAndValidateSender();
+        if (error != null) { await SendErrorToCaller(error); return; }
 
         dto.Type = MessageType.Typing;
-        dto.SenderId = senderId.Value.ToString();
-        var error = MessageValidator.Validate(dto);
-        if (error != null)
-        {
-            await SendErrorToCaller(error);
-            return;
-        }
+        dto.SenderId = senderId!.Value.ToString();
+        var validationError = MessageValidator.Validate(dto);
+        if (validationError != null) { await SendErrorToCaller(validationError); return; }
 
         if (!int.TryParse(dto.ReceiverId, out var receiverId))
-        {
-            await SendErrorToCaller("Invalid receiverId.");
-            return;
-        }
+        { await SendErrorToCaller("Invalid receiverId."); return; }
 
-        dto.SenderId = senderId.Value.ToString();
-        await Clients.Group(GroupName(receiverId)).SendAsync("ReceiveMessage", dto);
+        await Clients.Group(HubGroups.User(receiverId)).SendAsync("ReceiveMessage", dto);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -131,38 +92,27 @@ public class ChatHub : Hub
         var userId = _tracker.GetUserId(connectionId);
         _tracker.Remove(connectionId);
         if (userId != null)
-            await Clients.Group("all").SendAsync("UserOffline", userId.Value);
+            await Clients.Group(HubGroups.All).SendAsync("UserOffline", userId.Value);
         await base.OnDisconnectedAsync(exception);
+    }
+
+    private (int? SenderId, string? Error) ResolveAndValidateSender()
+    {
+        var senderId = _tracker.GetUserId(Context.ConnectionId!);
+        return senderId == null ? (null, "Not registered. Call Join first.") : (senderId, null);
     }
 
     private async Task SendErrorToCaller(string message)
     {
-        var dto = new ChatMessageDto
-        {
-            Type = MessageType.Error,
-            Data = message
-        };
-        await Clients.Caller.SendAsync("ReceiveMessage", dto);
-    }
-
-    private static string GroupName(int userId) => "user_" + userId;
-
-    private static async Task<User> GetOrCreateUserAsync(ChatDbContext db, string name)
-    {
-        var existing = await db.Users.FirstOrDefaultAsync(u => u.Name == name);
-        if (existing != null) return existing;
-        var newUser = new User { Name = name };
-        db.Users.Add(newUser);
-        await db.SaveChangesAsync();
-        return newUser;
+        await Clients.Caller.SendAsync("ReceiveMessage", new ChatMessageDto { Type = MessageType.Error, Data = message });
     }
 }
 
 /// <summary>
-/// Returned from Join so the client knows its userId.
+/// SignalR group names for routing.
 /// </summary>
-public class JoinResult
+internal static class HubGroups
 {
-    public bool Success { get; set; }
-    public int UserId { get; set; }
+    public const string All = "all";
+    public static string User(int userId) => "user_" + userId;
 }
