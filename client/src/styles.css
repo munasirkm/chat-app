@@ -2,11 +2,28 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Light theme palette */
+  --bg-page: #f5ebe0;
+  --bg-surface: #edede9;
+  --bg-card: #e3d5ca;
+  --bg-elevated: #f5ebe0;
+  --border: #d6ccc2;
+  --accent: #d5bdaf;
+  --accent-hover: #c9b0a2;
+  --text: #3d3a36;
+  --text-muted: #6b6560;
+  --input-bg: #f5ebe0;
+  --error: #b85450;
+  --success: #5a7d5a;
+  --online: #5a7d5a;
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background: #1a1b26;
-  color: #c0caf5;
+  background: var(--bg-page);
+  color: var(--text);
   min-height: 100vh;
 }
 
@@ -26,13 +43,13 @@ button {
 }
 
 .error {
-  color: #f7768e;
+  color: var(--error);
 }
 
 .success {
-  color: #9ece6a;
+  color: var(--success);
 }
 
 .muted {
-  color: #565f89;
+  color: var(--text-muted);
 }

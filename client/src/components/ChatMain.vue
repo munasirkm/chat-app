@@ -34,11 +34,13 @@ defineProps({
 
 <style scoped>
 .chat-main {
-  background: #24283b;
-  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   min-height: 400px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .placeholder {

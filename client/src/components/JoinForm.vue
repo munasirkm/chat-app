@@ -36,15 +36,18 @@ function submit() {
 
 <style scoped>
 .join-form {
-  background: #24283b;
-  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 1.5rem;
   max-width: 360px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .join-form h2 {
   margin: 0 0 1rem 0;
   font-size: 1.1rem;
+  color: var(--text);
 }
 
 .join-form form {
@@ -56,27 +59,28 @@ function submit() {
 .join-form input {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #414868;
-  border-radius: 6px;
-  background: #1a1b26;
-  color: #c0caf5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 .join-form input:focus {
   outline: none;
-  border-color: #7aa2f7;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(213, 189, 175, 0.25);
 }
 
 .join-form button {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 6px;
-  background: #7aa2f7;
-  color: #1a1b26;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--text);
 }
 
 .join-form button:hover:not(:disabled) {
-  background: #89b4fa;
+  background: var(--accent-hover);
 }
 
 .join-form button:disabled {

@@ -54,18 +54,21 @@ const emit = defineEmits(['select-user'])
 
 <style scoped>
 .chat-sidebar {
-  background: #24283b;
-  border-radius: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .sidebar-section h2 {
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
   font-weight: 600;
+  color: var(--text);
 }
 
 .user-list {
@@ -76,7 +79,7 @@ const emit = defineEmits(['select-user'])
 
 .user-list li {
   padding: 0.5rem 0.75rem;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -84,11 +87,12 @@ const emit = defineEmits(['select-user'])
 }
 
 .user-list li:hover {
-  background: #343b58;
+  background: var(--bg-surface);
 }
 
 .user-list li.active {
-  background: #414868;
+  background: var(--accent);
+  color: var(--text);
 }
 
 .name-row {
@@ -101,12 +105,12 @@ const emit = defineEmits(['select-user'])
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #565f89;
+  background: var(--border);
   flex-shrink: 0;
 }
 
 .status-dot.online {
-  background: #9ece6a;
+  background: var(--online);
 }
 
 .preview {

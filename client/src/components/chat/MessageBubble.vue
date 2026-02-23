@@ -30,13 +30,15 @@ defineProps({
 }
 
 .bubble-wrap.theirs .bubble {
-  background: #414868;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  color: var(--text);
   border-bottom-left-radius: 4px;
 }
 
 .bubble-wrap.own .bubble {
-  background: #7aa2f7;
-  color: #1a1b26;
+  background: var(--accent);
+  color: var(--text);
   border-bottom-right-radius: 4px;
 }
 

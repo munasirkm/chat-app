@@ -18,10 +18,12 @@ defineProps({
 <style scoped>
 .app-header {
   margin-bottom: 1.5rem;
+
 }
 
 .app-header h1 {
-  margin: 0 0 0.25rem 0;
+  margin: 0.25rem;
   font-size: 1.5rem;
+  
 }
 </style>

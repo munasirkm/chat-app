@@ -56,33 +56,36 @@ onUnmounted(stopAndCleanup)
   display: flex;
   gap: 0.5rem;
   padding: 1rem;
-  border-top: 1px solid #414868;
+  border-top: 1px solid var(--border);
+  background: var(--bg-surface);
+  border-radius: 0 0 10px 10px;
 }
 
 .chat-input input {
   flex: 1;
   padding: 0.5rem 0.75rem;
-  border: 1px solid #414868;
-  border-radius: 6px;
-  background: #1a1b26;
-  color: #c0caf5;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text);
 }
 
 .chat-input input:focus {
   outline: none;
-  border-color: #7aa2f7;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(213, 189, 175, 0.25);
 }
 
 .chat-input button {
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 6px;
-  background: #7aa2f7;
-  color: #1a1b26;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--text);
 }
 
 .chat-input button:hover:not(:disabled) {
-  background: #89b4fa;
+  background: var(--accent-hover);
 }
 
 .chat-input button:disabled {
