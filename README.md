@@ -1,9 +1,25 @@
-## RealChat – Real-Time Chat App
+## Real-Time Chat App
 
-Simple two-user real-time chat app built as a junior full‑stack challenge.
+Simple real-time chat app built with:
 
 - **Backend**: ASP.NET Core 8 (C#), SignalR, SQLite (EF Core)
 - **Frontend**: Vue 3 + Vite, @microsoft/signalr
+
+### Prerequisites
+
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js](https://nodejs.org/) 18+ and npm
+
+---
+
+## Table of contents
+
+- [Running the app](#running-the-app)
+- [Real-time message format](#real-time-message-format)
+- [Real-time flow](#real-time-flow)
+- [Data model (SQLite)](#data-model-sqlite)
+- [Testing](#testing)
+- [What I would improve next](#what-i-would-improve-next)
 
 ---
 
@@ -42,6 +58,12 @@ npm run dev
 Open `http://localhost:5173` in the browser.
 
 To test two users, open the URL in **two tabs or browsers**, join with different names, and start chatting.
+
+To test two users from a separate device connected to the same network, run:
+```bash
+npm run dev -- --host
+```
+Then open http://[your-local-ip]:5173 on the other device’s browser.
 
 ---
 
@@ -149,7 +171,9 @@ High‑level flow between two users (A and B):
 
 ## Testing
 
-Unit tests focus on message validation robustness:
+### Backend (C#)
+
+From the repo root:
 
 ```bash
 dotnet test
@@ -167,26 +191,28 @@ dotnet test
 
 All invalid payloads are caught at the validator layer and converted into `error` messages, never server crashes.
 
+### Frontend (Vue)
+
+From the `client` directory:
+
+```bash
+cd client
+npm run test        # watch mode
+npm run test:run    # single run
+```
+
+Uses Vitest and `@vue/test-utils` for component and unit tests.
+
 ---
 
 ## What I would improve next
 
 - **Authentication & identity**
-  - Replace ad‑hoc name‑based users with proper authentication (e.g. identity + JWT / cookies).
+  - Replace ad‑hoc name‑based users with proper authentication.
   - Prevent name collisions and allow avatars / profiles.
-- **Stronger presence**
-  - Track last‑seen timestamps in the database.
-  - Indicate “online”, “away”, “last seen at …”.
-- **Scaling SignalR**
-  - Move connection tracking to a distributed backplane (e.g. Redis) so multiple API instances can share presence and messages.
-  - Use sticky sessions or Azure SignalR Service for cloud deployment.
 - **Better history & pagination**
   - Paginate message history with “load more” instead of a fixed limit.
   - Add search, pinning, and per‑conversation settings.
-- **Typing & delivery UX**
-  - Show per‑message delivery/read receipts.
-  - Persist typing state more robustly or throttle by user rather than keystrokes.
 - **Frontend polish**
   - Add responsive layout for mobile.
-  - Extract a small client‑side store for conversations instead of keeping everything in `App.vue`.
 
