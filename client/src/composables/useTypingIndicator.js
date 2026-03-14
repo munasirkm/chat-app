@@ -5,9 +5,9 @@ export function useTypingIndicator(sendTypingFn) {
   let timer = null
 
   function onTyping() {
-    sendTypingFn(true)
+
     if (timer) clearTimeout(timer)
-    timer = setTimeout(() => sendTypingFn(false), TYPING_DEBOUNCE_MS)
+    timer = setTimeout(() => sendTypingFn(true), TYPING_DEBOUNCE_MS)
   }
 
   function stopAndCleanup() {
