@@ -56,34 +56,43 @@ const emit = defineEmits(['select-user'])
 .chat-sidebar {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  gap: 1.5rem;
+  box-shadow: var(--shadow);
+  height: 100%;
+  overflow-y: auto;
 }
 
 .sidebar-section h2 {
-  margin: 0 0 0.5rem 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text);
+  margin: 0 0 0.75rem 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 700;
+  color: var(--text-muted);
 }
 
 .user-list {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .user-list li {
-  padding: 0.5rem 0.75rem;
+  padding: 0.75rem 1rem;
   border-radius: 8px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.25rem;
+  transition: all 0.2s;
+  border: 1px solid transparent;
 }
 
 .user-list li:hover {
@@ -91,22 +100,33 @@ const emit = defineEmits(['select-user'])
 }
 
 .user-list li.active {
-  background: var(--accent);
-  color: var(--text);
+  background: var(--bg-elevated);
+  border-color: var(--border);
 }
 
 .name-row {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--text);
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--border);
   flex-shrink: 0;
+  box-shadow: 0 0 0 2px var(--bg-card);
+}
+
+.user-list li:hover .status-dot {
+  box-shadow: 0 0 0 2px var(--bg-surface);
+}
+
+.user-list li.active .status-dot {
+  box-shadow: 0 0 0 2px var(--bg-elevated);
 }
 
 .status-dot.online {
@@ -114,14 +134,17 @@ const emit = defineEmits(['select-user'])
 }
 
 .preview {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
+  color: var(--text-muted);
 }
 
 .time {
   font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 </style>

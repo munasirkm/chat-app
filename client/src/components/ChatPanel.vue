@@ -16,6 +16,8 @@ const props = defineProps({
   typingFromUserId: { type: Number, default: null }
 })
 
+const emit = defineEmits(['back'])
+
 const { loading, load } = useMessageHistory()
 
 const showTypingIndicator = computed(() => props.typingFromUserId === props.otherUser?.id)
@@ -35,7 +37,7 @@ watch(
 
 <template>
   <div class="chat-panel">
-    <ChatHeader :name="otherUser.name" />
+    <ChatHeader :name="otherUser.name" @back="emit('back')" />
 
     <div v-if="!loading" class="messages">
       <MessageBubble
@@ -65,24 +67,29 @@ watch(
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  height: 100%;
 }
 
 .chat-panel .messages {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .chat-panel .typing-indicator {
   font-size: 0.85rem;
   font-style: italic;
-  padding: 0.25rem 0;
+  padding: 0.5rem 0;
 }
 
 .chat-panel .loading {
-  padding: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }
 </style>

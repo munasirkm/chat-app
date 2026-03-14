@@ -33,6 +33,10 @@ const activeConversationKey = computed(() => {
   const other = selectedUser.value
   return user && other ? conversationKey(user.userId, other.id) : ''
 })
+
+function goBack() {
+  selectUser(null)
+}
 </script>
 
 <template>
@@ -41,25 +45,30 @@ const activeConversationKey = computed(() => {
 
     <JoinForm v-if="!isJoined" @join="onJoin" />
 
-    <div v-else class="layout">
-      <ChatSidebar
-        :conversations="conversations"
-        :users="users"
-        :current-user="currentUser"
-        :selected-user-id="selectedUserId"
-        :is-online="isOnline"
-        @select-user="selectUser"
-      />
-      <ChatMain
-        :current-user="currentUser"
-        :selected-user="selectedUser"
-        :connection-ref="connectionRef"
-        :current-conversation-messages="currentConversationMessages"
-        :set-conversation-history="setConversationHistory"
-        :conversation-key="activeConversationKey"
-        :on-sent-message="onSentMessage"
-        :typing-from-user-id="typingFromUserId"
-      />
+    <div v-else class="layout" :class="{ 'has-selected-user': selectedUser }">
+      <div class="sidebar-wrapper">
+        <ChatSidebar
+          :conversations="conversations"
+          :users="users"
+          :current-user="currentUser"
+          :selected-user-id="selectedUserId"
+          :is-online="isOnline"
+          @select-user="selectUser"
+        />
+      </div>
+      <div class="main-wrapper">
+        <ChatMain
+          :current-user="currentUser"
+          :selected-user="selectedUser"
+          :connection-ref="connectionRef"
+          :current-conversation-messages="currentConversationMessages"
+          :set-conversation-history="setConversationHistory"
+          :conversation-key="activeConversationKey"
+          :on-sent-message="onSentMessage"
+          :typing-from-user-id="typingFromUserId"
+          @back="goBack"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -67,12 +76,41 @@ const activeConversationKey = computed(() => {
 <style scoped>
 .app {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 1rem;
-  min-height: 60vh;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  flex: 1;
+  min-height: 70vh;
+}
+
+.sidebar-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .layout.has-selected-user .sidebar-wrapper {
+    display: none;
+  }
+
+  .layout:not(.has-selected-user) .main-wrapper {
+    display: none;
+  }
 }
 </style>

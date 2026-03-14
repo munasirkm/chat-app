@@ -16,75 +16,102 @@ function submit() {
 </script>
 
 <template>
-  <div class="join-form">
-    <h2>Join the chat</h2>
-    <form @submit.prevent="submit">
-      <input
-        v-model="userName"
-        type="text"
-        placeholder="Your name"
-        maxlength="256"
-        autocomplete="username"
-        :disabled="emitting"
-      />
-      <button type="submit" :disabled="emitting || !userName?.trim()">
-        Join
-      </button>
-    </form>
+  <div class="join-container">
+    <div class="join-form">
+      <h2>Join the chat</h2>
+      <p class="subtitle muted">Enter your name to connect with others</p>
+      <form @submit.prevent="submit">
+        <input
+          v-model="userName"
+          type="text"
+          placeholder="Your name"
+          maxlength="256"
+          autocomplete="username"
+          :disabled="emitting"
+        />
+        <button type="submit" :disabled="emitting || !userName?.trim()">
+          Join Chat
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.join-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: 2rem 1rem;
+}
+
 .join-form {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1.5rem;
-  max-width: 360px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: var(--shadow);
+  text-align: center;
 }
 
 .join-form h2 {
-  margin: 0 0 1rem 0;
-  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
   color: var(--text);
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
 }
 
 .join-form form {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .join-form input {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--input-bg);
   color: var(--text);
+  font-size: 1rem;
+  transition: all 0.2s;
 }
 
 .join-form input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(213, 189, 175, 0.25);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 .join-form button {
-  padding: 0.5rem 1rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
   border: none;
   border-radius: 8px;
   background: var(--accent);
-  color: var(--text);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s;
 }
 
 .join-form button:hover:not(:disabled) {
   background: var(--accent-hover);
+  transform: translateY(-1px);
 }
 
 .join-form button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
 }
 </style>

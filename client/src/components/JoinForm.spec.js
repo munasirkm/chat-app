@@ -7,7 +7,7 @@ describe('JoinForm', () => {
     const wrapper = mount(JoinForm)
     expect(wrapper.find('h2').text()).toBe('Join the chat')
     expect(wrapper.find('input').exists()).toBe(true)
-    expect(wrapper.find('button[type="submit"]').text()).toBe('Join')
+    expect(wrapper.find('button[type="submit"]').text()).toBe('Join Chat')
   })
 
   it('emits join with userName when form is submitted', async () => {
